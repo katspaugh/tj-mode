@@ -34,7 +34,7 @@ Contributions of other editor plugins are very welcome.
 ## How to Install
 Install like any other
 [Tern plugin](http://ternjs.net/doc/manual.html#plugin_third_party). The
-Tern plugin is called `tern-highlight`, and it's on on npm, so:
+Tern plugin is called `tern-highlight`, and it's on npm, so:
 
 ```
 npm install -g tern-highlight
@@ -51,9 +51,8 @@ You also need to enable the plugin in your `.tern-project` files:
 ```
 
 ## How to Install the Emacs Plugin
-The Emacs package is not on MELPA yet, so you have to install it manually:
+The Emacs package is available on MELPA. So `M-x package-install RET tj-mode` .
 ```Lisp
-(load "~/.emacs.d/site-lisp/tj-mode.el")
 (add-to-list 'auto-mode-alist '("\\.js\\'" . tj-mode))
 ```
 

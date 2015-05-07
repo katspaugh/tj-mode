@@ -222,6 +222,6 @@ ARGS are ignored."
   "Major mode to highlight JavaScript using an external parser–Tern."
   (tj-mode-enter))
 
-(provide 'tern-js)
+(provide 'tj-mode)
 
 ;;; tj-mode.el ends here
