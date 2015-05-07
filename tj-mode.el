@@ -30,7 +30,7 @@
     ("Error" . error))
   "Map of token types to font faces.")
 
-(defun tj/echo-message (new-point &rest args)
+(defun tj/echo-message (new-point &rest _args)
   "Called by point-motion hooks to echo property at NEW-POINT.
 
 ARGS are ignored."
@@ -166,7 +166,7 @@ DATA contains a list of references and their positions."
            (tj/looking-at "Error")))
     (tern-run-query #'tj/highlight-refs-callback "refs" (point) :silent))
 
-(defun tj/highlight-refs (&rest args)
+(defun tj/highlight-refs (&rest _args)
   "Highlight reference at point in it's lexical scope.
 
 Ignore ARGS"
@@ -175,7 +175,7 @@ Ignore ARGS"
   (setq tj/highlight-refs-timer (run-with-idle-timer
                                  0.25 nil #'tj/refs-query)))
 
-(defun tj/start (&rest args)
+(defun tj/start (&rest _args)
   "Start highlighting.
 
 ARGS are ignored."
