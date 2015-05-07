@@ -151,7 +151,7 @@ DATA contains a list of references and their positions."
 (defun tj/looking-at (type)
   "Whether point is at a token of TYPE."
   (let ((face (get-text-property (point) 'font-lock-face)))
-    (eq face '(cdr (assoc type tj/faces)))))
+    (eq face (cdr (assoc type tj/faces)))))
 
 (defun tj/refs-query ()
   "Run a `refs' query."
