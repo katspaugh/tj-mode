@@ -3,7 +3,7 @@
 ;; Author: katspaugh@gmail.com
 ;; Keywords: languages, javascript
 ;; URL: https://github.com/katspaugh/tj-mode
-;; Version: 0.0.1
+;; Version: 0.0.12
 ;; Package-Requires: ((emacs "24") (tern "0.0.1") (js2-mode "20150202"))
 
 ;;; Commentary:
