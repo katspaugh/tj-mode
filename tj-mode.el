@@ -204,10 +204,10 @@ ARGS are ignored."
   "Exit tj-mode."
   (interactive)
   (tj/cancel-timer)
-  (remove-hook 'kill-buffer-hook #'tj-mode-exit)
-  (remove-hook 'change-major-mode-hook #'tj-mode-exit)
-  (remove-hook 'after-change-functions #'tj/start)
-  (remove-hook 'post-command-hook #'tj/highlight-refs)
+  (remove-hook 'kill-buffer-hook #'tj-mode-exit t)
+  (remove-hook 'change-major-mode-hook #'tj-mode-exit t)
+  (remove-hook 'after-change-functions #'tj/start t)
+  (remove-hook 'post-command-hook #'tj/highlight-refs t)
   (tern-mode -1)
   (tj/clear-faces))
 
