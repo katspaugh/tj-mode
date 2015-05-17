@@ -3,8 +3,8 @@
 ;; Author: katspaugh@gmail.com
 ;; Keywords: languages, javascript
 ;; URL: https://github.com/katspaugh/tj-mode
-;; Version: 0.0.12
-;; Package-Requires: ((emacs "24") (tern "0.0.1") (js2-mode "20150202"))
+;; Version: 0.0.14
+;; Package-Requires: ((emacs "24") (tern "0.0.1") (js2-mode "20150514"))
 
 ;;; Commentary:
 ;;; `tj-mode' highlights JavaScript based on Tern's AST.
@@ -33,7 +33,7 @@
 (defun tj/echo-message (new-point &rest _args)
   "Called by point-motion hooks to echo property at NEW-POINT.
 
-ARGS are ignored."
+_ARGS are ignored."
   (let ((msg (get-text-property new-point 'help-echo)))
     (when (and (stringp msg)
                (not (current-message))
@@ -122,63 +122,10 @@ BUFFER is the analyzed buffer, DATA is a map of messages per file."
      (apply-partially #'tj/query-callback buffer)
      "highlight" (point) :full-file)))
 
-(defvar-local tj/highlight-refs-timer nil "Idle timer to highlight reference at point.")
-
-(defun tj/overlay-region (start end)
-  "Put overlay on region from START to END."
-  (let ((overlay (make-overlay start end)))
-    (overlay-put overlay 'name 'tj/overlay)
-    (overlay-put overlay 'face 'highlight)))
-
-(defun tj/clear-overlays ()
-  "Remove all overlays."
-  (remove-overlays (point-min) (point-max) 'name 'tj/overlay))
-
-(defun tj/highlight-refs-callback (data)
-  "Highlight references of variable at point.
-
-DATA contains a list of references and their positions."
-  (tj/clear-overlays)
-  (mapc
-   (lambda (ref)
-     (let ((file (cdr (assq 'file ref))))
-       (when (string= file (tern-project-relative-file))
-         (let ((start (1+ (cdr (assq 'start ref))))
-               (end (1+ (cdr (assq 'end ref)))))
-           (tj/overlay-region start end)))))
-   (cdr (assq 'refs data))))
-
-(defun tj/looking-at (type)
-  "Whether point is at a token of TYPE."
-  (let ((face (get-text-property (point) 'font-lock-face)))
-    (eq face (cdr (assoc type tj/faces)))))
-
-(defun tj/refs-query ()
-  "Run a `refs' query."
-  (unless (or
-           (tj/looking-at "SpecialIdentifier")
-           (tj/looking-at "Keyword")
-           (tj/looking-at "Literal")
-           (tj/looking-at "StringLiteral")
-           (tj/looking-at "NumberLiteral")
-           (tj/looking-at "Comment")
-           (tj/looking-at "Warning")
-           (tj/looking-at "Error")))
-    (tern-run-query #'tj/highlight-refs-callback "refs" (point) :silent))
-
-(defun tj/highlight-refs (&rest _args)
-  "Highlight reference at point in it's lexical scope.
-
-Ignore ARGS"
-  (when (timerp tj/highlight-refs-timer)
-    (cancel-timer tj/highlight-refs-timer))
-  (setq tj/highlight-refs-timer (run-with-idle-timer
-                                 0.25 nil #'tj/refs-query)))
-
 (defun tj/start (&rest _args)
   "Start highlighting.
 
-ARGS are ignored."
+_ARGS are ignored."
   (tj/cancel-timer)
   (setq tj/timer (run-with-idle-timer
                   0.25 nil #'tj/query (current-buffer))))
@@ -189,7 +136,6 @@ ARGS are ignored."
   (add-hook 'kill-buffer-hook #'tj-mode-exit nil t)
   (add-hook 'change-major-mode-hook #'tj-mode-exit nil t)
   (add-hook 'after-change-functions #'tj/start nil t)
-  (add-hook 'post-command-hook #'tj/highlight-refs nil t)
   ;; Syntactic beginning/end of function definition
   (set (make-local-variable 'beginning-of-defun-function) #'tj/beginning-of-block)
   (set (make-local-variable 'end-of-defun-function) #'tj/end-of-block)
@@ -207,7 +153,6 @@ ARGS are ignored."
   (remove-hook 'kill-buffer-hook #'tj-mode-exit t)
   (remove-hook 'change-major-mode-hook #'tj-mode-exit t)
   (remove-hook 'after-change-functions #'tj/start t)
-  (remove-hook 'post-command-hook #'tj/highlight-refs t)
   (tern-mode -1)
   (tj/clear-faces))
 
