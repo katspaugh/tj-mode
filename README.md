@@ -40,7 +40,8 @@ Tern plugin is called `tern-highlight`, and it's on npm, so:
 npm install -g tern-highlight
 ```
 
-You also need to enable the plugin in your `.tern-project` files:
+You also need to enable the plugin in the `.tern-project` file in the
+root of your project directory:
 
 ```JSON
 {

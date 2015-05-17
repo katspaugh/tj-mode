@@ -42,32 +42,32 @@
                     var decl = node.declarations[i];
 
                     if (decl.init && decl.init.type === 'FunctionExpression') {
-                        collect(decl.id, 'FunctionIdentifier');
+                        collect(decl.id, 'FunctionDeclaration');
                     } else {
-                        collect(decl.id);
+                        collect(decl.id, 'VariableDeclaration');
                     }
                 }
             },
 
             Function: function (node) {
                 for (var i = 0, len = node.params.length; i < len; i++) {
-                    collect(node.params[i], 'ArgumentIdentifier');
+                    collect(node.params[i], 'ArgumentDeclaration');
                 }
 
-                collect(node.id, 'FunctionIdentifier');
+                collect(node.id, 'FunctionDeclaration');
             },
 
             BlockStatement: function (node) {
-                collect(node, 'BlockStatement');
+                collect(node);
             },
 
             ThisExpression: function (node) {
-                collect(node, 'SpecialIdentifier');
+                collect(node);
             },
 
             Property: function (node) {
                 if (node.value && node.value.type === 'FunctionExpression') {
-                    collect(node.key, 'FunctionIdentifier');
+                    collect(node.key, 'FunctionDeclaration');
                 }
             },
 
@@ -87,7 +87,7 @@
              * Detects top-level identifiers, e.g. the object in
              * `object.property` or just `object`.
              */
-            Identifier: function (node, state, c) {
+            Identifier: function (node, state) {
                 var type = infer.expressionType({
                     node: node, state: state
                 });
@@ -187,7 +187,6 @@
 
     tern.registerPlugin('highlight', function (server) {
         // Overwrite server request to collect parse errors
-        // For some reason, not all errors are caught here
         var request = server.request;
 
         server.request = function (doc, callback) {

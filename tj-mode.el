@@ -3,7 +3,7 @@
 ;; Author: katspaugh@gmail.com
 ;; Keywords: languages, javascript
 ;; URL: https://github.com/katspaugh/tj-mode
-;; Version: 0.0.14
+;; Version: 0.0.15
 ;; Package-Requires: ((emacs "24") (tern "0.0.1") (js2-mode "20150514"))
 
 ;;; Commentary:
@@ -16,11 +16,10 @@
 
 (defvar tj/faces
   '(
-    ("Identifier" . font-lock-variable-name-face)
-    ("ArgumentIdentifier" . font-lock-variable-name-face)
-    ("FunctionIdentifier" . font-lock-function-name-face)
-    ("SpecialIdentifier" . font-lock-builtin-face)
-    ("Property" . font-lock-variable-name-face)
+    ("VariableDeclaration" . font-lock-variable-name-face)
+    ("ArgumentDeclaration" . font-lock-variable-name-face)
+    ("FunctionDeclaration" . font-lock-function-name-face)
+    ("ThisExpression" . font-lock-builtin-face)
     ("Keyword" . font-lock-keyword-face)
     ("Literal" . font-lock-constant-face)
     ("StringLiteral" . font-lock-string-face)
@@ -142,9 +141,8 @@ _ARGS are ignored."
   ;; We are using js2-mode's indentation functions because they are brilliant
   (set (make-local-variable 'indent-line-function) #'js2-indent-line)
   (set (make-local-variable 'indent-region-function) #'js2-indent-region)
-  ;; A hack to get Tern running
   (tern-get-type)
-  (run-with-timer 0.25 nil #'tj/query (current-buffer)))
+  (run-with-timer 1 nil #'tj/start))
 
 (defun tj-mode-exit ()
   "Exit tj-mode."

@@ -1,6 +1,6 @@
 {
   "name": "tern-highlight",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "description": "Highlight JavaScript syntax & semantics with Tern",
   "main": "highlight.js",
   "scripts": {
