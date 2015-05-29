@@ -1,6 +1,8 @@
 tj-mode
 -------
 
+[![NPM version](https://img.shields.io/npm/v/tern-highlight.svg)](https://www.npmjs.org/package/tern-highlight)
+
 Highlight JavaScript with [Tern](https://github.com/marijnh/tern).
 
 ## Features
