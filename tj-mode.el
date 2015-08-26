@@ -3,7 +3,7 @@
 ;; Author: katspaugh@gmail.com
 ;; Keywords: languages, javascript
 ;; URL: https://github.com/katspaugh/tj-mode
-;; Version: 0.0.15
+;; Version: 0.0.16
 ;; Package-Requires: ((emacs "24") (tern "0.0.1") (js2-mode "20150514"))
 
 ;;; Commentary:
@@ -105,21 +105,17 @@ ARGS are ignored."
 (defun tj/query-callback (buffer data)
   "Tern query callback.
 
-BUFFER is the analyzed buffer, DATA is a map of messages per file."
+BUFFER is the analyzed buffer, DATA contains a list of messages."
   (when (eq buffer (current-buffer))
-    (let ((messages
-           (cdr (assoc-string
-                 (tern-project-relative-file)
-                 data))))
-      (when messages
-        (tj/fontify messages)))))
+    (tj/fontify (cdr (assoc 'highlight data)))))
 
 (defun tj/query (buffer)
   "Run Tern query on BUFFER."
   (when (eq (current-buffer) buffer)
-    (tern-run-query
-     (apply-partially #'tj/query-callback buffer)
-     "highlight" (point) :full-file)))
+    (let ((buffer-text (buffer-substring-no-properties (point-min) (point-max))))
+      (tern-run-query
+       (apply-partially #'tj/query-callback buffer)
+       `((type . "highlight") (text . ,buffer-text)) (point)))))
 
 (defvar-local tj/highlight-refs-timer nil "Idle timer to highlight reference at point.")
 

@@ -15,10 +15,9 @@ Highlight JavaScript with [Tern](https://github.com/marijnh/tern).
  * Comments (inline and block)
 
 ### Extra Features :boom:
- * Syntax errors (from strict parser)
- * Undeclared variables
+ * Syntax errors
  * Trailing commas in array and object literals
- * Missing semicolons after statements
+ * Missing semicolons
 
 <img src="http://i.imgur.com/GgK5w6l.png" width="273" />
 
@@ -27,8 +26,8 @@ Highlight JavaScript with [Tern](https://github.com/marijnh/tern).
 
  * Syntactic `beginning-of-defun` and `end-of-defun`
  * Automatic (idle) highlighting of references to the variable at point
-
-Bouncing indentation is borrowed from the excellent [js2-mode](https://github.com/mooz/js2-mode).
+ * Bouncing indentation (which is borrowed from the excellent
+   [js2-mode](https://github.com/mooz/js2-mode)).
 
 ## Other Editors
 Contributions of other editor plugins are very welcome.
@@ -61,9 +60,6 @@ The Emacs package is available on MELPA. So `M-x package-install RET tj-mode` .
 
 ## Tests
 TODO
-
-### Credits
-Some of the code in `tokens.js` (the part about undefined variables) is taken from [tern-lint](https://github.com/angelozerr/tern-lint).
 
 ### P.S.
 This package is *not* written by [TJ Holowaychuk](https://github.com/tj) :smile:
