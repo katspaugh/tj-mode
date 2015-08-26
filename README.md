@@ -1,6 +1,7 @@
 tj-mode
 -------
 
+[![Build Status](https://secure.travis-ci.org/katspaugh/tj-mode.png)](http://travis-ci.org/katspaugh/tj-mode)
 [![NPM version](https://img.shields.io/npm/v/tern-highlight.svg)](https://www.npmjs.org/package/tern-highlight)
 
 Highlight JavaScript with [Tern](https://github.com/marijnh/tern).
@@ -59,7 +60,8 @@ The Emacs package is available on MELPA. So `M-x package-install RET tj-mode` .
 ```
 
 ## Tests
-TODO
+
+See [here](https://github.com/katspaugh/tj-mode)
 
 ### P.S.
 This package is *not* written by [TJ Holowaychuk](https://github.com/tj) :smile:
