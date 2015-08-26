@@ -35,7 +35,7 @@
         });
     }
 
-    function makeVisitors (server, query, file, collect) {
+    function makeVisitors (server, query, collect) {
         return {
             VariableDeclaration: function (node) {
                 for (var i = 0, len = node.declarations.length; i < len; i++) {
@@ -79,29 +79,6 @@
                 } else {
                     collect(node);
                 }
-            },
-
-            /**
-             * @see https://github.com/angelozerr/tern-lint
-             *
-             * Detects top-level identifiers, e.g. the object in
-             * `object.property` or just `object`.
-             */
-            Identifier: function (node, state) {
-                var type = infer.expressionType({
-                    node: node, state: state
-                });
-
-                if (type.originNode == null && type.origin == null && type.isEmpty()) {
-                    // The type of the identifier cannot be determined,
-                    // and the origin is unknown.
-                    collect({
-                        type: 'Warning',
-                        start: node.start,
-                        end: node.end,
-                        message: 'Unknown identifier ' + node.name
-                    });
-                }
             }
         };
     }
@@ -123,64 +100,60 @@
     tern.defineQueryType('highlight', {
         run: function (server, query) {
             var messages = {};
+            var fileMessages = messages["highlight"] = [];
 
-            server.files.forEach(function (file) {
-                var fileMessages = messages[file.name] = [];
+            var text = query.text, ast, collect = function (node, type) {
+                addMessage(fileMessages, node, type);
+            };
+            // Parse to collect keyword tokens, comments, warnings and errors
+            try {
+                var ast = acorn.parse(text, {
+                    ecmaVersion: 6,
 
-                var collect = function (node, type) {
-                    addMessage(fileMessages, node, type);
-                };
+                    forbidReserved: 'everywhere',
 
-                // Walk the error-tolerant parser AST
-                var visitors = makeVisitors(server, query, file, collect);
-                walk.simple(file.ast, visitors, scopeVisitor, file.scope);
+                    onToken: function (token) {
+                        token.type.keyword && collect({
+                            type: 'Keyword',
+                            start: token.start,
+                            end: token.end
+                        });
+                    },
 
-                // Re-parse to collect keyword tokens, comments, warnings and errors
-                try {
-                    var ast = acorn.parse(file.text, {
-                        ecmaVersion: 6,
+                    onComment: function (isBlock, text, start, end) {
+                        collect({
+                            type: 'Comment',
+                            start: start,
+                            end: end
+                        });
+                    },
 
-                        forbidReserved: 'everywhere',
+                    onInsertedSemicolon: function (pos) {
+                        collect({
+                            type: 'Warning',
+                            start: Math.max(0, pos - 1),
+                            end: pos,
+                            message: 'Missing semicolon'
+                        });
+                    },
 
-                        onToken: function (token) {
-                            token.type.keyword && collect({
-                                type: 'Keyword',
-                                start: token.start,
-                                end: token.end
-                            });
-                        },
-
-                        onComment: function (isBlock, text, start, end) {
-                            collect({
-                                type: 'Comment',
-                                start: start,
-                                end: end
-                            });
-                        },
-
-                        onInsertedSemicolon: function (pos) {
-                            collect({
-                                type: 'Warning',
-                                start: Math.max(0, pos - 1),
-                                end: pos,
-                                message: 'Missing semicolon'
-                            });
-                        },
-
-                        onTrailingComma: function (pos) {
-                            collect({
-                                type: 'Warning',
-                                start: pos,
-                                end: pos + 1,
-                                message: 'Trailing comma'
-                            });
-                        }
-                    });
-                } catch (err) {
-                    addError(fileMessages, err);
-                }
-            });
-
+                    onTrailingComma: function (pos) {
+                        collect({
+                            type: 'Warning',
+                            start: pos,
+                            end: pos + 1,
+                            message: 'Trailing comma'
+                        });
+                    }
+                });
+                
+                // Walk the error-tolerant parser AST                    
+                var visitors = makeVisitors(server, query, collect);
+                walk.simple(ast, visitors, scopeVisitor, {});
+                    
+            } catch (err) {
+                addError(fileMessages, err);
+            }
             return messages;
         }
     });
