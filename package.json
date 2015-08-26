@@ -1,7 +1,7 @@
 {
   "name": "tern-highlight",
-  "version": "0.0.15",
-  "description": "Highlight JavaScript syntax & semantics with Tern",
+  "version": "0.0.16",
+  "description": "Highlight JavaScript syntax with Tern",
   "main": "highlight.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
