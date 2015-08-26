@@ -3,11 +3,11 @@
  */
 (function (mod) {
     if (typeof exports == 'object' && typeof module == 'object') // CommonJS
-        return mod(require('tern/lib/infer'), require('tern/lib/tern'), require('acorn'), require('acorn/dist/walk'));
+        return mod(require('tern/lib/tern'), require('acorn'), require('acorn/dist/walk'));
     if (typeof define == 'function' && define.amd) // AMD
-        return define(['tern/lib/infer', 'tern/lib/tern', 'acorn', 'acorn/dist/walk'], mod);
-    mod(tern, tern, acorn, acorn.walk);
-})(function (infer, tern, acorn, walk) {
+        return define(['tern/lib/tern', 'acorn', 'acorn/dist/walk'], mod);
+    mod(tern, acorn, acorn.walk);
+})(function (tern, acorn, walk) {
     'use strict';
 
     function addMessage(messages, node, type) {
@@ -83,31 +83,17 @@
         };
     }
 
-    /**
-     * @see https://github.com/angelozerr/tern-lint
-     */
-    var scopeVisitor = walk.make({
-        Function: function(node, _st, c) {
-            var scope = node.body.scope;
-            if (node.id) c(node.id, scope);
-            for (var i = 0, len = node.params.length; i < len; i++) {
-                c(node.params[i], scope);
-            }
-            c(node.body, scope, 'ScopeBody');
-        }
-    });
-
     tern.defineQueryType('highlight', {
         run: function (server, query) {
-            var messages = {};
-            var fileMessages = messages["highlight"] = [];
+            var messages = [];
 
-            var text = query.text, ast, collect = function (node, type) {
-                addMessage(fileMessages, node, type);
+            var collect = function (node, type) {
+                addMessage(messages, node, type);
             };
+
             // Parse to collect keyword tokens, comments, warnings and errors
             try {
-                var ast = acorn.parse(text, {
+                var ast = acorn.parse(query.text, {
                     ecmaVersion: 6,
 
                     forbidReserved: 'everywhere',
@@ -146,15 +132,18 @@
                         });
                     }
                 });
-                
-                // Walk the error-tolerant parser AST                    
+
+                // Walk the error-tolerant parser AST
                 var visitors = makeVisitors(server, query, collect);
-                walk.simple(ast, visitors, scopeVisitor, {});
-                    
+                walk.simple(ast, visitors);
             } catch (err) {
-                addError(fileMessages, err);
+                addError(messages, err);
             }
-            return messages;
+
+            // Reply with a JSON object
+            return {
+                highlight: messages
+            };
         }
     });
 
@@ -165,9 +154,8 @@
         server.request = function (doc, callback) {
             request.call(this, doc, function (err, data) {
                 if (err) {
-                    data = {};
-                    data[doc.query.file] = [];
-                    addError(data[doc.query.file], err);
+                    data = { highlight: [] };
+                    addError(data.highlight, err);
                 }
 
                 callback(null, data);
