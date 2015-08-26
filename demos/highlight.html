@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Outline Tern Demo</title>
+    
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
+    <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="../node_modules/codemirror/theme/eclipse.css">
+    <script src="../node_modules/codemirror/addon/hint/show-hint.js"></script>
+    <script src="../node_modules/codemirror/addon/edit/closetag.js"></script>
+    <script src="../node_modules/codemirror/addon/edit/closebrackets.js"></script>    
+    <script src="../node_modules/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="../node_modules/codemirror/addon/selection/active-line.js"></script>
+    <script src="../node_modules/codemirror/addon/runmode/runmode.js"></script>
+        
+    <script src="../node_modules/codemirror/mode/javascript/javascript.js"></script>    
+
+  <!-- Tern JS -->
+  <script src="../node_modules/acorn/dist/acorn.js"></script>
+  <script src="../node_modules/acorn/dist/acorn_loose.js"></script>
+  <script src="../node_modules/acorn/dist/walk.js"></script>
+  <script src="../node_modules/tern/lib/signal.js"></script>
+  <script src="../node_modules/tern/lib/tern.js"></script>
+  <script src="../node_modules/tern/lib/def.js"></script>
+  <script src="../node_modules/tern/lib/comment.js"></script>
+  <script src="../node_modules/tern/lib/infer.js"></script>
+  
+  <script src="../codemirror/addon/highlight/tern-highlight.js"></script>
+  <script src="../highlight.js"></script>
+  
+  <!-- Official CodeMirror Tern addon -->
+  <script src="../node_modules/codemirror/addon/tern/tern.js"></script>   
+
+  <!-- Extension of CodeMirror Tern addon -->
+  <link rel="stylesheet" href="codemirror-javascript/addon/hint/tern/tern-extension.css">
+  <script src="codemirror-javascript/addon/hint/tern/tern-extension.js"></script>    
+  <script src="codemirror-javascript/addon/hint/tern/defs/ecma5.json.js"></script>
+  <script src="codemirror-javascript/addon/hint/tern/defs/browser.json.js"></script>
+
+  <!-- CodeMirror Extension -->  
+  
+  <link rel="stylesheet" href="codemirror-extension/addon/hint/show-hint-eclipse.css">
+  <script src="codemirror-extension/addon/hint/show-context-info.js"></script>
+  <link rel="stylesheet" href="codemirror-extension/addon/hint/show-context-info.css">
+  
+  <link rel="stylesheet" href="codemirror-extension/addon/hint/templates-hint.css">
+  <script src="codemirror-extension/addon/hint/templates-hint.js"></script>
+  
+  <!-- CodeMirror Javascript -->
+  <script src="codemirror-javascript/addon/hint/javascript/javascript-templates.js"></script>
+
+  <!-- Tern Hover -->
+  <link rel="stylesheet" href="codemirror-extension/addon/hover/text-hover.css">
+  <script src="codemirror-extension/addon/hover/text-hover.js"></script>
+  <script src="codemirror-javascript/addon/hint/tern/tern-hover.js"></script>
+    		          
+  </head>
+  <body>
+    
+    <h1>Demo with Highlight Tern plugin </h1>
+	<p>See <a href="https://github.com/katspaugh/tj-mode">https://github.com/katspaugh/tj-mode</a> for more infos.</p>  
+    <form>
+    
+    <table style="width: 100%;height: 500px">
+    	<tr>
+    		<td valign="top" style="width: 50%">
+<textarea id="code" name="code">var fn = function(a, b, c) {
+	y = a + b + c;
+	x(); 
+}
+
+var y = 10;
+
+hello();
+
+var obj = {
+  prop1: 'yo',
+  prop: 100,
+  
+  fnProp: function() {
+    alert(1);
+  }
+}
+</textarea>    		
+    		</td>
+    		<td valign="top">
+    			<textarea id="highlight" style="width:300px;height:100%" >
+    			
+    			</textarea>    		
+    		</td>
+    	</tr>
+    
+    </table>
+  
+
+
+</form>
+    <script type="text/javascript">
+       
+      function passAndHint(cm) {
+     	setTimeout(function() {cm.execCommand("autocomplete");}, 100);
+      	return CodeMirror.Pass;
+      }
+      
+      function myHint(cm) {
+      	return CodeMirror.showHint(cm, CodeMirror.ternHint, {async: true}); 
+      }
+     
+      CodeMirror.commands.autocomplete = function(cm) {
+        CodeMirror.showHint(cm, myHint);
+      }
+        
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: 'application/javascript',
+        theme : "eclipse",
+        styleActiveLine: true,
+        lineNumbers: true,
+        lineWrapping: true,
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        extraKeys: {
+         	"'.'": passAndHint,
+        	"Ctrl-Space": "autocomplete",
+        	"Ctrl-I": function(cm) { CodeMirror.tern.showType(cm); },
+  	        "Alt-.": function(cm) { CodeMirror.tern.jumpToDef(cm); },
+	        "Alt-,": function(cm) { CodeMirror.tern.jumpBack(cm); },
+	        "Ctrl-Q": function(cm) { CodeMirror.tern.rename(cm); }
+        },
+        gutters: ["CodeMirror-linenumbers"],
+    	textHover: {delay:300},
+    	ternWith: { plugins: {"highlight" : {}}},
+    	highlight: {
+    	  node : document.getElementById("highlight"),
+    	}
+      });      
+    </script>
+    
+  </body>
+</html>
