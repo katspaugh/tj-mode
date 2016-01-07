@@ -4,20 +4,16 @@ var fs = require('fs');
 var path = require('path');
 var tern = require('tern');
 var assert = require('assert');
-require('../highlight');
+var highlight = require('../highlight');
 
-var projectDir = path.resolve(__dirname, '..');
+var ternDir = path.resolve(__dirname + '/../node_modules/tern');
 
-var resolve = function (pth) {
-    return path.resolve(projectDir, pth);
-};
-
-var browser = JSON.parse(fs.readFileSync(resolve('node_modules/tern/defs/browser.json')), 'utf8');
-var ecma5 = JSON.parse(fs.readFileSync(resolve('node_modules/tern/defs/ecma5.json')), 'utf8');
+var browser = require(ternDir + '/defs/browser.json');
+var ecma5 = require(ternDir + '/defs/ecma5.json');
 
 var allDefs = {
-    browser : browser,
-    ecma5 : ecma5
+    browser: browser,
+    ecma5: ecma5
 };
 
 var createServer = exports.createServer = function (defNames, plugins, options) {
@@ -31,9 +27,11 @@ var createServer = exports.createServer = function (defNames, plugins, options) 
     if (!plugins) plugins = {};
     plugins['highlight'] = options ? options : {};
 
+    highlight.initialize(ternDir);
+
     var server = new tern.Server({
-        plugins : plugins,
-        defs : defs
+        plugins: plugins,
+        defs: defs
     });
     return server;
 };
@@ -49,9 +47,9 @@ var assertHighlightReponse = exports.assertHighlightReponse = function (err, res
 exports.assertHighlight = function (text, expected, defNames, plugins, options) {
     var server = createServer(defNames, plugins, options);
     server.request({
-        query : {
-            type : 'highlight',
-            text : text
+        query: {
+            type: 'highlight',
+            text: text
         }
     }, function (err, resp) {
         assertHighlightReponse(err, resp, expected);
