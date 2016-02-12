@@ -3,6 +3,7 @@ tj-mode
 
 [![Build Status](https://secure.travis-ci.org/katspaugh/tj-mode.png)](http://travis-ci.org/katspaugh/tj-mode)
 [![NPM version](https://img.shields.io/npm/v/tern-highlight.svg)](https://www.npmjs.org/package/tern-highlight)
+[![MELPA badge](https://melpa.org/packages/tj-mode-badge.svg)](https://melpa.org/#/tj-mode)
 
 Highlight JavaScript with [Tern](https://github.com/marijnh/tern).
 
